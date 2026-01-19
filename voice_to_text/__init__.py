@@ -1,7 +1,7 @@
 """Voice-to-Text: Bulk voice message transcription using Whisper."""
 
 __version__ = "0.1.0"
-__author__ = "Roman"
+__author__ = "Roman Gordienko"
 
 from voice_to_text.transcriber import (
     Backend,
