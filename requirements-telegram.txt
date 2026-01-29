@@ -1,0 +1,12 @@
+# Telegram bot integration requirements
+
+# Choose one of:
+aiogram>=3.0.0        # Recommended for new projects
+# python-telegram-bot>=20.0  # Alternative
+
+# Base requirements
+openai-whisper>=20231117
+faster-whisper>=1.0.0
+pydub>=0.25.0
+click>=8.0
+rich>=13.0

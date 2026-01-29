@@ -1,8 +1,6 @@
 # voice-to-text
 
-
 Bulk voice message transcription using Whisper</strong>
-
 
 ---
 
@@ -26,7 +24,6 @@ pip install -r requirements.txt
 ```
 
 ### With faster-whisper (recommended)
-
 ```bash
 pip install -r requirements.txt
 pip install faster-whisper
@@ -57,6 +54,7 @@ choco install ffmpeg
 ## Usage
 
 ### Command Line
+
 
 ```bash
 # Single file
@@ -91,6 +89,34 @@ vtt models
 
 ### Python API
 
+```bash
+# Single file
+python -m voice_to_text.cli transcribe voice.ogg
+
+# With output file
+python -m voice_to_text.cli transcribe voice.ogg -o transcript.txt
+
+# Batch processing (entire folder)
+python -m voice_to_text.cli transcribe ./voices --batch -o results.json -f json
+
+# Specify language (faster, more accurate)
+python -m voice_to_text.cli transcribe voice.ogg -l ru
+
+# Use larger model for better quality
+python -m voice_to_text.cli transcribe voice.ogg -m medium
+
+# Generate SRT subtitles
+python -m voice_to_text.cli transcribe podcast.mp3 -f srt -o podcast.srt
+
+# Use OpenAI API (requires OPENAI_API_KEY)
+export OPENAI_API_KEY=sk-...
+python -m voice_to_text.cli transcribe voice.ogg -b api
+
+# List available models
+python -m voice_to_text.cli models
+```
+
+### Python API
 ```python
 from pathlib import Path
 from voice_to_text.transcriber import create_transcriber, Backend, ModelSize
@@ -117,7 +143,6 @@ Path("output.srt").write_text(srt_content)
 ```
 
 ### Format Detection
-
 ```python
 from voice_to_text.formats import detect_format, get_audio_info, find_voice_files
 
@@ -140,6 +165,7 @@ files = find_voice_files(Path("./downloads"), recursive=True)
 | `whisper` | 1x | ★★★★★ | ✅ | ✅ | Free |
 | `faster` | 4x | ★★★★★ | ✅ | ✅ | Free |
 | `api` | ~2x | ★★★★★ | N/A | ❌ | $0.006/min |
+<<<<<<< HEAD
 | `groq` | ~10x | ★★★★★ | N/A | ❌ | Free tier* |
 
 *Groq free tier: ~2000 requests/day
@@ -188,6 +214,9 @@ files = find_voice_files(Path("./downloads"), recursive=True)
 # Settings → Advanced → Export Telegram Data → Voice Messages
 
 vtt transcribe ~/Downloads/Telegram\ Desktop/voice_messages \
+
+python -m voice_to_text.cli transcribe ~/Downloads/Telegram\ Desktop/voice_messages \
+
     --batch \
     -l ru \
     -m small \
@@ -199,6 +228,12 @@ vtt transcribe ~/Downloads/Telegram\ Desktop/voice_messages \
 
 ```bash
 vtt transcribe podcast.mp3 -m medium -f srt -o podcast.srt
+```
+
+### Process with Python script
+
+```bash
+python -m voice_to_text.cli transcribe podcast.mp3 -m medium -f srt -o podcast.srt
 ```
 
 ### Process with Python script
@@ -245,7 +280,6 @@ Path("transcripts.json").write_text(
 ## Troubleshooting
 
 ### FFmpeg not found
-
 ```bash
 # Check installation
 ffmpeg -version
@@ -261,10 +295,11 @@ Use smaller model or switch to CPU:
 
 ```bash
 # Smaller model
-vtt transcribe voice.ogg -m base
+python -m voice_to_text.cli transcribe voice.ogg -m base
 
 # Force CPU
-CUDA_VISIBLE_DEVICES="" vtt transcribe voice.ogg
+CUDA_VISIBLE_DEVICES="" python -m voice_to_text.cli transcribe voice.ogg
+
 ```
 
 ### Slow on CPU
@@ -291,6 +326,10 @@ pytest --cov=voice_to_text --cov-report=html
 # Format code
 black voice_to_text tests
 ruff check voice_to_text tests
+
+pip install faster-whisper
+python -m voice_to_text.cli transcribe voice.ogg -b faster
+
 ```
 
 ## License
@@ -302,9 +341,12 @@ MIT
 - 🌐 [audiotools.dev](https://audiotools.dev)
 - 📦 [go-audio-converter](https://github.com/roman/go-audio-converter)
 - 🎵 [music-recognition](https://github.com/roman/music-recognition)
+- 📦 [go-audio-converter](https://github.com/raxod/go-audio-converter)
+- 🎵 [music-recognition](https://github.com/raxod/music-recognition)
 
 ---
 
 <p align="center">
   Made with ❤️ for voice message haters
+
 </p>
