@@ -1,5 +1,9 @@
 # voice-to-text
 
+
+Bulk voice message transcription using Whisper</strong>
+
+
 ---
 
 Convert voice messages from Telegram, WhatsApp, and other messengers to text. Batch processing, multiple output formats, three transcription backends.
@@ -16,17 +20,20 @@ Convert voice messages from Telegram, WhatsApp, and other messengers to text. Ba
 ## Installation
 
 ### Basic (CPU)
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### With faster-whisper (recommended)
+
 ```bash
 pip install -r requirements.txt
 pip install faster-whisper
 ```
 
 ### With GPU support
+
 ```bash
 pip install -r requirements.txt
 pip install torch --index-url https://download.pytorch.org/whl/cu118
@@ -35,6 +42,7 @@ pip install torch --index-url https://download.pytorch.org/whl/cu118
 ### System dependencies
 
 For `.ogg`, `.opus`, `.m4a` conversion you need FFmpeg:
+
 ```bash
 # Ubuntu/Debian
 sudo apt install ffmpeg
@@ -49,34 +57,40 @@ choco install ffmpeg
 ## Usage
 
 ### Command Line
+
 ```bash
 # Single file
-python -m voice_to_text.cli transcribe voice.ogg
+vtt transcribe voice.ogg
 
 # With output file
-python -m voice_to_text.cli transcribe voice.ogg -o transcript.txt
+vtt transcribe voice.ogg -o transcript.txt
 
 # Batch processing (entire folder)
-python -m voice_to_text.cli transcribe ./voices --batch -o results.json -f json
+vtt transcribe ./voices --batch -o results.json -f json
 
 # Specify language (faster, more accurate)
-python -m voice_to_text.cli transcribe voice.ogg -l ru
+vtt transcribe voice.ogg -l ru
 
 # Use larger model for better quality
-python -m voice_to_text.cli transcribe voice.ogg -m medium
+vtt transcribe voice.ogg -m medium
 
 # Generate SRT subtitles
-python -m voice_to_text.cli transcribe podcast.mp3 -f srt -o podcast.srt
+vtt transcribe podcast.mp3 -f srt -o podcast.srt
 
 # Use OpenAI API (requires OPENAI_API_KEY)
 export OPENAI_API_KEY=sk-...
-python -m voice_to_text.cli transcribe voice.ogg -b api
+vtt transcribe voice.ogg -b api
+
+# Use Groq API (fast & free, requires GROQ_API_KEY)
+export GROQ_API_KEY=gsk_...
+vtt transcribe voice.ogg -b groq
 
 # List available models
-python -m voice_to_text.cli models
+vtt models
 ```
 
 ### Python API
+
 ```python
 from pathlib import Path
 from voice_to_text.transcriber import create_transcriber, Backend, ModelSize
@@ -103,6 +117,7 @@ Path("output.srt").write_text(srt_content)
 ```
 
 ### Format Detection
+
 ```python
 from voice_to_text.formats import detect_format, get_audio_info, find_voice_files
 
@@ -125,12 +140,16 @@ files = find_voice_files(Path("./downloads"), recursive=True)
 | `whisper` | 1x | ★★★★★ | ✅ | ✅ | Free |
 | `faster` | 4x | ★★★★★ | ✅ | ✅ | Free |
 | `api` | ~2x | ★★★★★ | N/A | ❌ | $0.006/min |
+| `groq` | ~10x | ★★★★★ | N/A | ❌ | Free tier* |
+
+*Groq free tier: ~2000 requests/day
 
 ### Choosing a backend
 
 - **faster** (default) — best for most cases, 4x faster than original Whisper on CPU
 - **whisper** — original OpenAI Whisper, use if you have issues with faster-whisper
 - **api** — no local compute needed, pay-per-use, requires internet
+- **groq** — extremely fast cloud inference, generous free tier, great for testing
 
 ## Models
 
@@ -163,11 +182,12 @@ files = find_voice_files(Path("./downloads"), recursive=True)
 ## Examples
 
 ### Transcribe Telegram voice folder
+
 ```bash
 # Export voices from Telegram Desktop: 
 # Settings → Advanced → Export Telegram Data → Voice Messages
 
-python -m voice_to_text.cli transcribe ~/Downloads/Telegram\ Desktop/voice_messages \
+vtt transcribe ~/Downloads/Telegram\ Desktop/voice_messages \
     --batch \
     -l ru \
     -m small \
@@ -176,11 +196,13 @@ python -m voice_to_text.cli transcribe ~/Downloads/Telegram\ Desktop/voice_messa
 ```
 
 ### Create podcast transcript with timestamps
+
 ```bash
-python -m voice_to_text.cli transcribe podcast.mp3 -m medium -f srt -o podcast.srt
+vtt transcribe podcast.mp3 -m medium -f srt -o podcast.srt
 ```
 
 ### Process with Python script
+
 ```python
 import json
 from pathlib import Path
@@ -216,12 +238,14 @@ Path("transcripts.json").write_text(
 | Variable | Description |
 |----------|-------------|
 | `OPENAI_API_KEY` | API key for OpenAI backend |
+| `GROQ_API_KEY` | API key for Groq backend ([get free key](https://console.groq.com)) |
 | `WHISPER_CACHE_DIR` | Custom cache directory for models |
 | `CUDA_VISIBLE_DEVICES` | GPU selection for CUDA |
 
 ## Troubleshooting
 
 ### FFmpeg not found
+
 ```bash
 # Check installation
 ffmpeg -version
@@ -234,20 +258,39 @@ brew install ffmpeg      # macOS
 ### CUDA out of memory
 
 Use smaller model or switch to CPU:
+
 ```bash
 # Smaller model
-python -m voice_to_text.cli transcribe voice.ogg -m base
+vtt transcribe voice.ogg -m base
 
 # Force CPU
-CUDA_VISIBLE_DEVICES="" python -m voice_to_text.cli transcribe voice.ogg
+CUDA_VISIBLE_DEVICES="" vtt transcribe voice.ogg
 ```
 
 ### Slow on CPU
 
 Use faster-whisper backend:
+
 ```bash
 pip install faster-whisper
-python -m voice_to_text.cli transcribe voice.ogg -b faster
+vtt transcribe voice.ogg -b faster
+```
+
+## Development
+
+```bash
+# Install dev dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest
+
+# Run tests with coverage
+pytest --cov=voice_to_text --cov-report=html
+
+# Format code
+black voice_to_text tests
+ruff check voice_to_text tests
 ```
 
 ## License
@@ -257,8 +300,8 @@ MIT
 ## Links
 
 - 🌐 [audiotools.dev](https://audiotools.dev)
-- 📦 [go-audio-converter](https://github.com/raxod/go-audio-converter)
-- 🎵 [music-recognition](https://github.com/raxod/music-recognition)
+- 📦 [go-audio-converter](https://github.com/roman/go-audio-converter)
+- 🎵 [music-recognition](https://github.com/roman/music-recognition)
 
 ---
 
