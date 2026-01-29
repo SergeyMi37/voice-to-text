@@ -17,7 +17,11 @@ from voice_to_text.transcriber import (
 
 class TestTranscriptionResult:
     """Tests for TranscriptionResult dataclass."""
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_basic_result(self):
         """Create basic transcription result."""
         result = TranscriptionResult(
@@ -25,28 +29,46 @@ class TestTranscriptionResult:
             language="en",
             duration=1.5
         )
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
         assert result.text == "Hello world"
         assert result.language == "en"
         assert result.duration == 1.5
         assert result.segments is None
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_result_with_segments(self):
         """Result with segments for timestamps."""
         segments = [
             {"start": 0.0, "end": 1.0, "text": "Hello"},
             {"start": 1.0, "end": 2.0, "text": "world"},
         ]
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
         result = TranscriptionResult(
             text="Hello world",
             language="en",
             duration=2.0,
             segments=segments
         )
+<<<<<<< HEAD
         
         assert len(result.segments) == 2
     
+=======
+
+        assert len(result.segments) == 2
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_to_srt_empty(self):
         """SRT export without segments returns empty."""
         result = TranscriptionResult(
@@ -55,47 +77,78 @@ class TestTranscriptionResult:
             duration=1.0,
             segments=None
         )
+<<<<<<< HEAD
         
         assert result.to_srt() == ""
     
+=======
+
+        assert result.to_srt() == ""
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_to_srt_with_segments(self):
         """SRT export with proper formatting."""
         segments = [
             {"start": 0.0, "end": 1.5, "text": " Hello"},
             {"start": 1.5, "end": 3.0, "text": " World"},
         ]
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
         result = TranscriptionResult(
             text="Hello World",
             language="en",
             duration=3.0,
             segments=segments
         )
+<<<<<<< HEAD
         
         srt = result.to_srt()
         
+=======
+
+        srt = result.to_srt()
+
+>>>>>>> 243afb8 (init commit  in github)
         assert "1\n" in srt
         assert "00:00:00,000 --> 00:00:01,500" in srt
         assert "Hello" in srt
         assert "2\n" in srt
         assert "World" in srt
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_timestamp_formatting(self):
         """Timestamp formatting edge cases."""
         result = TranscriptionResult(
             text="Test",
             language="en",
+<<<<<<< HEAD
             duration=3661.5,
             segments=[{"start": 3661.0, "end": 3661.5, "text": " Test"}]
         )
         
+=======
+            duration=3661.5,  # 1h 1m 1.5s
+            segments=[{"start": 3661.0, "end": 3661.5, "text": " Test"}]
+        )
+
+>>>>>>> 243afb8 (init commit  in github)
         srt = result.to_srt()
         assert "01:01:01,000" in srt
 
 
 class TestBackendEnum:
     """Tests for Backend enum."""
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_backend_values(self):
         """All backends have correct values."""
         assert Backend.WHISPER.value == "whisper"
@@ -105,7 +158,11 @@ class TestBackendEnum:
 
 class TestModelSize:
     """Tests for ModelSize enum."""
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_model_sizes(self):
         """All model sizes have correct values."""
         assert ModelSize.TINY.value == "tiny"
@@ -117,6 +174,7 @@ class TestModelSize:
 
 class TestWhisperTranscriber:
     """Tests for WhisperTranscriber."""
+<<<<<<< HEAD
     
     def test_transcribe_single(self, sample_wav, mock_whisper_model):
         """Transcribe single file."""
@@ -161,6 +219,53 @@ class TestWhisperTranscriber:
         
         results = list(transcriber.transcribe_batch([bad_file]))
         
+=======
+
+    def test_transcribe_single(self, sample_wav, mock_whisper_model):
+        """Transcribe single file."""
+        transcriber = WhisperTranscriber(ModelSize.BASE, device="cpu")
+
+        result = transcriber.transcribe(sample_wav)
+
+        assert result.text == "Hello, this is a test transcription."
+        assert result.language == "en"
+        assert mock_whisper_model.transcribe.called
+
+    def test_transcribe_with_language(self, sample_wav, mock_whisper_model):
+        """Transcribe with specified language."""
+        transcriber = WhisperTranscriber(ModelSize.BASE, device="cpu")
+
+        result = transcriber.transcribe(sample_wav, language="ru")
+
+        call_args = mock_whisper_model.transcribe.call_args
+        assert call_args[1].get("language") == "ru"
+
+    def test_transcribe_batch(self, voice_files_dir, mock_whisper_model):
+        """Batch transcription."""
+        from voice_to_text.formats import find_voice_files
+
+        transcriber = WhisperTranscriber(ModelSize.BASE, device="cpu")
+        files = find_voice_files(voice_files_dir)
+
+        results = list(transcriber.transcribe_batch(files))
+
+        assert len(results) == len(files)
+        for path, result in results:
+            assert isinstance(result, TranscriptionResult)
+
+    def test_transcribe_batch_handles_errors(self, temp_dir, mock_whisper_model):
+        """Batch transcription handles individual file errors."""
+        # Create a file that will cause an error
+        bad_file = temp_dir / "bad.wav"
+        bad_file.write_bytes(b"not a wav file")
+
+        mock_whisper_model.transcribe.side_effect = Exception("Decode error")
+
+        transcriber = WhisperTranscriber(ModelSize.BASE, device="cpu")
+
+        results = list(transcriber.transcribe_batch([bad_file]))
+
+>>>>>>> 243afb8 (init commit  in github)
         assert len(results) == 1
         path, result = results[0]
         assert "[ERROR:" in result.text
@@ -168,6 +273,7 @@ class TestWhisperTranscriber:
 
 class TestFasterWhisperTranscriber:
     """Tests for FasterWhisperTranscriber."""
+<<<<<<< HEAD
     
     def test_transcribe_single(self, sample_wav, mock_faster_whisper_model):
         """Transcribe with faster-whisper."""
@@ -185,6 +291,25 @@ class TestFasterWhisperTranscriber:
         
         result = transcriber.transcribe(sample_wav)
         
+=======
+
+    def test_transcribe_single(self, sample_wav, mock_faster_whisper_model):
+        """Transcribe with faster-whisper."""
+        transcriber = FasterWhisperTranscriber(ModelSize.BASE, device="cpu")
+
+        result = transcriber.transcribe(sample_wav)
+
+        assert "Hello" in result.text
+        assert result.language == "en"
+        assert result.confidence == 0.95
+
+    def test_segments_extraction(self, sample_wav, mock_faster_whisper_model):
+        """Segments are properly extracted."""
+        transcriber = FasterWhisperTranscriber(ModelSize.BASE, device="cpu")
+
+        result = transcriber.transcribe(sample_wav)
+
+>>>>>>> 243afb8 (init commit  in github)
         assert result.segments is not None
         assert len(result.segments) == 1
         assert result.segments[0]["start"] == 0.0
@@ -193,6 +318,7 @@ class TestFasterWhisperTranscriber:
 
 class TestOpenAIAPITranscriber:
     """Tests for OpenAI API transcriber."""
+<<<<<<< HEAD
     
     def test_transcribe_requires_api_key(self):
         """API transcriber needs API key."""
@@ -209,6 +335,26 @@ class TestOpenAIAPITranscriber:
     @patch('voice_to_text.transcriber.OpenAI')
     def test_transcribe_single(self, mock_openai, sample_wav):
         """Transcribe via API."""
+=======
+
+    def test_transcribe_requires_api_key(self):
+        """API transcriber needs API key."""
+        # Clear env var if set
+        import os
+        old_key = os.environ.pop("OPENAI_API_KEY", None)
+
+        try:
+            with pytest.raises(Exception):
+                transcriber = OpenAIAPITranscriber()
+        finally:
+            if old_key:
+                os.environ["OPENAI_API_KEY"] = old_key
+
+    @patch('voice_to_text.transcriber.OpenAI')
+    def test_transcribe_single(self, mock_openai, sample_wav):
+        """Transcribe via API."""
+        # Setup mock
+>>>>>>> 243afb8 (init commit  in github)
         mock_client = MagicMock()
         mock_response = MagicMock()
         mock_response.text = "API transcription result"
@@ -217,35 +363,58 @@ class TestOpenAIAPITranscriber:
         mock_response.segments = []
         mock_client.audio.transcriptions.create.return_value = mock_response
         mock_openai.return_value = mock_client
+<<<<<<< HEAD
         
         transcriber = OpenAIAPITranscriber(api_key="test-key")
         result = transcriber.transcribe(sample_wav)
         
+=======
+
+        transcriber = OpenAIAPITranscriber(api_key="test-key")
+        result = transcriber.transcribe(sample_wav)
+
+>>>>>>> 243afb8 (init commit  in github)
         assert result.text == "API transcription result"
         assert result.language == "en"
 
 
 class TestCreateTranscriber:
     """Tests for transcriber factory."""
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_create_whisper(self, mock_whisper_model):
         """Create Whisper transcriber."""
         transcriber = create_transcriber(
             backend=Backend.WHISPER,
             model_size=ModelSize.BASE
         )
+<<<<<<< HEAD
         
         assert isinstance(transcriber, WhisperTranscriber)
     
+=======
+
+        assert isinstance(transcriber, WhisperTranscriber)
+
+>>>>>>> 243afb8 (init commit  in github)
     def test_create_faster_whisper(self, mock_faster_whisper_model):
         """Create faster-whisper transcriber."""
         transcriber = create_transcriber(
             backend=Backend.FASTER_WHISPER,
             model_size=ModelSize.SMALL
         )
+<<<<<<< HEAD
         
         assert isinstance(transcriber, FasterWhisperTranscriber)
     
+=======
+
+        assert isinstance(transcriber, FasterWhisperTranscriber)
+
+>>>>>>> 243afb8 (init commit  in github)
     @patch('voice_to_text.transcriber.OpenAI')
     def test_create_api(self, mock_openai):
         """Create API transcriber."""
@@ -253,6 +422,7 @@ class TestCreateTranscriber:
             backend=Backend.OPENAI_API,
             api_key="test-key"
         )
+<<<<<<< HEAD
         
         assert isinstance(transcriber, OpenAIAPITranscriber)
     
@@ -260,3 +430,12 @@ class TestCreateTranscriber:
         """Invalid backend raises error."""
         with pytest.raises(ValueError):
             create_transcriber(backend="invalid")
+=======
+
+        assert isinstance(transcriber, OpenAIAPITranscriber)
+
+    def test_create_invalid_backend(self):
+        """Invalid backend raises error."""
+        with pytest.raises(ValueError):
+            create_transcriber(backend="invalid")
+>>>>>>> 243afb8 (init commit  in github)
