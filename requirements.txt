@@ -7,12 +7,20 @@ pydub>=0.25.0
 # Optional: Faster inference (4x speedup on CPU)
 # pip install faster-whisper
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 # faster-whisper>=1.0.0
 
 # Optional: OpenAI API backend
 # pip install openai
 # openai>=1.0
-=======
+
+
+# Optional: Groq API backend (fast & free)
+# pip install groq
+# groq>=0.4.0
+
 faster-whisper>=1.0.0
 
 # Optional: OpenAI API backend
@@ -21,4 +29,4 @@ openai>=1.0
 
 # Development
 # pip install -r requirements-dev.txt
->>>>>>> 243afb8 (init commit  in github)
+
