@@ -165,7 +165,6 @@ files = find_voice_files(Path("./downloads"), recursive=True)
 | `whisper` | 1x | ★★★★★ | ✅ | ✅ | Free |
 | `faster` | 4x | ★★★★★ | ✅ | ✅ | Free |
 | `api` | ~2x | ★★★★★ | N/A | ❌ | $0.006/min |
-<<<<<<< HEAD
 | `groq` | ~10x | ★★★★★ | N/A | ❌ | Free tier* |
 
 *Groq free tier: ~2000 requests/day
