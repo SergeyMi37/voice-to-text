@@ -140,8 +140,7 @@ class TelegramVoiceHandler:
         if self._transcriber is None:
             async with self._transcriber_lock:
                 if self._transcriber is None:
-                    # Run in thread pool (model loading is blocking)
-                    loop = asyncio.get_event_loop()
+                    loop = asyncio.get_running_loop()
                     self._transcriber = await loop.run_in_executor(
                         None,
                         lambda: create_transcriber(
@@ -501,7 +500,7 @@ class TelegramVoiceHandler:
         """Run transcription in thread pool."""
         transcriber = await self.get_transcriber()
         
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(
             None,
             lambda: transcriber.transcribe(file_path, language=language)
@@ -517,7 +516,7 @@ class TelegramVoiceHandler:
         try:
             from pydub import AudioSegment
             
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             await loop.run_in_executor(
                 None,
                 lambda: AudioSegment.from_file(str(video_path)).export(

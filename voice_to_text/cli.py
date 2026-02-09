@@ -7,6 +7,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.table import Table
 import json
 
+from . import __version__
 from .transcriber import (
     create_transcriber,
     Backend,
@@ -19,7 +20,7 @@ console = Console()
 
 
 @click.group()
-@click.version_option(version="0.1.0")
+@click.version_option(version=__version__)
 def main():
     """Voice-to-Text: Bulk voice message transcription using Whisper."""
     pass

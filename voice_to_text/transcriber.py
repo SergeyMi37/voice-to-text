@@ -106,20 +106,25 @@ class WhisperTranscriber(BaseTranscriber):
             language: str | None = None
     ) -> TranscriptionResult:
         """Transcribe a single audio file."""
-        audio_path = self._ensure_compatible(audio_path)
+        converted_path = self._ensure_compatible(audio_path)
+        is_temp = converted_path != audio_path
 
-        options = {}
-        if language:
-            options["language"] = language
+        try:
+            options = {}
+            if language:
+                options["language"] = language
 
-        result = self.model.transcribe(str(audio_path), **options)
+            result = self.model.transcribe(str(converted_path), **options)
 
-        return TranscriptionResult(
-            text=result["text"].strip(),
-            language=result.get("language", "unknown"),
-            duration=result["segments"][-1]["end"] if result["segments"] else 0,
-            segments=result["segments"],
-        )
+            return TranscriptionResult(
+                text=result["text"].strip(),
+                language=result.get("language", "unknown"),
+                duration=result["segments"][-1]["end"] if result["segments"] else 0,
+                segments=result["segments"],
+            )
+        finally:
+            if is_temp and converted_path.exists():
+                converted_path.unlink()
 
     def transcribe_batch(
             self,
