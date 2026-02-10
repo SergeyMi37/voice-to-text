@@ -1,3 +1,5 @@
+![Downloads](https://img.shields.io/github/downloads/formeo/voice-to-text/total)
+![Stars](https://img.shields.io/github/stars/formeo/voice-to-text)
 # voice-to-text
 
 Bulk voice message transcription using Whisper</strong>
